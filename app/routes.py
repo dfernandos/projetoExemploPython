@@ -8,6 +8,11 @@ from servicos import (
     listar_alunos,
     listar_professores,
     listar_turmas,
+    cadastrar_produto,
+    listar_produtos,
+    cadastrar_tipo,
+    listar_tipos,
+    cadastrar_tipoAnimal
 )
 
 bp = fk.Blueprint("api", __name__, url_prefix="/api")
@@ -38,6 +43,25 @@ def turmas():
     return fk.jsonify(listar_turmas())
 
 
+@bp.get("/tipos")
+def tipos():
+    return fk.jsonify(listar_tipos())
+
+@bp.get("/produtos")
+def produtos():
+    return fk.jsonify(listar_produtos())
+
+@bp.post("/produtos")
+def criar_produtos():
+    dados = fk.request.get_json(silent=True) or {}
+    try:
+        return fk.jsonify(cadastrar_produto(dados)), 201
+    except ValueError as exc:
+        return _erro(str(exc))
+    except IntegrityError:
+        return _erro("Já existe um produto com este tipo.", 409)
+
+
 @bp.post("/turmas")
 def criar_turma():
     dados = fk.request.get_json(silent=True) or {}
@@ -48,6 +72,15 @@ def criar_turma():
     except IntegrityError:
         return _erro("Já existe uma turma com este código.", 409)
 
+@bp.post("/tipos")
+def criar_tipo():
+    dados = fk.request.get_json(silent=True) or {}
+    try:
+        return fk.jsonify(cadastrar_tipo(dados)), 201
+    except ValueError as exc:
+        return _erro(str(exc))
+    except IntegrityError:
+        return _erro("Erro ao cadastrar tipo.", 409)
 
 @bp.get("/alunos")
 def alunos():
@@ -61,9 +94,25 @@ def criar_aluno():
         return fk.jsonify(cadastrar_aluno(dados)), 201
     except ValueError as exc:
         return _erro(str(exc))
+    except IntegrityError as exc:
+        orig = str(exc.orig) if getattr(exc, "orig", None) else str(exc)
+        orig_l = orig.lower()
+        if "unique" in orig_l and "email" in orig_l:
+            return _erro("Já existe um aluno com este e-mail.", 409)
+        return _erro(
+            "Não foi possível cadastrar o aluno (restrição do banco de dados).",
+            409,
+        )
+        
+@bp.post("/tipoAnimais")
+def criar_tipo_animais():
+    dados = fk.request.get_json(silent=True) or {}
+    try:
+        return fk.jsonify(cadastrar_tipoAnimal(dados)), 201
+    except ValueError as exc:
+        return _erro(str(exc))
     except IntegrityError:
-        return _erro("Já existe um aluno com este e-mail.", 409)
-
+        return _erro("Erro ao cadastrar tipo de animal.", 409)
 
 paginas = fk.Blueprint("paginas", __name__)
 

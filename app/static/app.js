@@ -14,6 +14,7 @@ const COLUNAS = {
     { chave: "id", titulo: "ID" },
     { chave: "nome", titulo: "Nome" },
     { chave: "email", titulo: "E-mail" },
+    { chave: "endereco", titulo: "Endereço" },
     { chave: "turma_id", titulo: "Turma" },
   ],
 };
@@ -37,6 +38,7 @@ const CAMPOS = {
   alunos: [
     { nome: "nome", rotulo: "Nome", obrigatorio: true },
     { nome: "email", rotulo: "E-mail", tipo: "email" },
+    { nome: "endereco", rotulo: "Endereço", obrigatorio: true },
     { nome: "turma_id", rotulo: "Turma", tipo: "select", origem: "turmas", obrigatorio: true },
   ],
 };
